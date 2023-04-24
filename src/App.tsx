@@ -11,7 +11,7 @@ function App() {
     // if (user) {
     //   setUser(JSON.parse(user));
     // }
-    setUser({ id: 1, username: "test" });
+    // setUser({ id: 1, username: "test" });
   }, []);
 
   return (

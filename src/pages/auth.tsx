@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { User } from "../_types/user";
 
@@ -8,12 +8,18 @@ interface AuthenticationProps {
 
 function Authentication(props: AuthenticationProps): JSX.Element {
   const { setUser } = props;
+  const [isNewUser, setIsNewUser] = useState<boolean>(false);
+
+  const handleNewUserOrNot = (): void => {
+    setIsNewUser(!isNewUser);
+  };
+
   return (
     <>
       <div className="flex justify-center items-center bg-yellow-100 h-screen">
         <div className="bg-white p-6 rounded-md shadow-lg w-96">
           <h1 className="text-3xl block text-center font-semibold">
-            Let's Laugh 😁
+            {isNewUser ? "Become a Laugher! 😂" : "Let's Laugh 😁"}
           </h1>
           <hr className="mt-3" />
           <div className="mt-3">
@@ -46,14 +52,19 @@ function Authentication(props: AuthenticationProps): JSX.Element {
               </label>
             </div>
             <div>
-              <a href="#" className="text-yellow-600 text-sm">
-                New? Become a laugher.
+              <a
+                href="#"
+                className="text-yellow-600 text-sm"
+                onClick={handleNewUserOrNot}>
+                {isNewUser
+                  ? "Already have an account."
+                  : "New? Become a laugher."}
               </a>
             </div>
           </div>
           <div>
             <button className="w-full text-yellow-600 text-base font-semibold py-1 px-3 mt-3 border-2 border-yellow-600 hover:bg-yellow-600 hover:text-white">
-              Login
+              {isNewUser ? "Register" : "Login"}
             </button>
           </div>
         </div>
