@@ -7,11 +7,12 @@ function App() {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // const user = localStorage.getItem("user");
-    // if (user) {
-    //   setUser(JSON.parse(user));
-    // }
-    // setUser({ id: 1, username: "test" });
+    // if the user is already logged in, we set the user state to the user in local storage
+    // if the user asked to be remembered
+    const user = localStorage.getItem("user");
+    if (user) {
+      setUser(JSON.parse(user));
+    }
   }, []);
 
   return (

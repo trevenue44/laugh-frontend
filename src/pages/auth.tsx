@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import axios from "axios";
 
 import { User } from "../_types/user";
+import { API_BASE_URL, API_HEADERS } from "../_consts/api";
 
 interface AuthenticationProps {
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
@@ -8,10 +10,48 @@ interface AuthenticationProps {
 
 function Authentication(props: AuthenticationProps): JSX.Element {
   const { setUser } = props;
+
+  // flow control states
   const [isNewUser, setIsNewUser] = useState<boolean>(false);
+
+  const [rememberMe, setRememberMe] = useState<boolean>(false);
+
+  // data states
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+
+  //   error control
+  const [error, setError] = useState<string | null>("");
 
   const handleNewUserOrNot = (): void => {
     setIsNewUser(!isNewUser);
+  };
+
+  const handleSubmit = async () => {
+    const userData = { username, password };
+
+    // setting the endpoint url based on isNewUser
+    let endpointURL: string;
+    if (isNewUser) {
+      endpointURL = `${API_BASE_URL}/accounts/register/`;
+    } else {
+      endpointURL = `${API_BASE_URL}/accounts/login/`;
+    }
+
+    try {
+      // sending user details data to backend
+      const { data }: { data: User } = await axios.post(endpointURL, userData, {
+        headers: API_HEADERS,
+      });
+      setUser(data);
+      // adding the user to local storage if remember me is checked
+      if (rememberMe) {
+        localStorage.setItem("user", JSON.stringify(data));
+      }
+    } catch (error) {
+      console.log(error);
+      setError(`Error ${isNewUser ? "registering" : "logging in"}`);
+    }
   };
 
   return (
@@ -31,6 +71,8 @@ function Authentication(props: AuthenticationProps): JSX.Element {
               id="username"
               className="w-full border text-base px-2 py-1 focus:outline-none focus:border-yellow-600 focus:ring-0"
               placeholder="Enter your username..."
+              onChange={(e) => setUsername(e.target.value)}
+              value={username}
             />
           </div>
           <div className="mt-3">
@@ -42,12 +84,24 @@ function Authentication(props: AuthenticationProps): JSX.Element {
               id="password"
               className="w-full border text-base px-2 py-1 focus:outline-none focus:border-yellow-600 focus:ring-0"
               placeholder="Enter your password..."
+              onChange={(e) => setPassword(e.target.value.trim())}
+              value={password}
             />
           </div>
+          {error && (
+            <div className="mt-2">
+              <p className="text-xs text-red-600">{error}</p>
+            </div>
+          )}
           <div className="mt-3 flex justify-between items-center">
-            <div className="items-center">
-              <input type="checkbox" id="remember" />
-              <label htmlFor="remember" className="ml-2">
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="remember"
+                checked={rememberMe}
+                onChange={() => setRememberMe(!rememberMe)}
+              />
+              <label htmlFor="remember" className="ml-2 text-sm">
                 Remember me
               </label>
             </div>
@@ -63,7 +117,9 @@ function Authentication(props: AuthenticationProps): JSX.Element {
             </div>
           </div>
           <div>
-            <button className="w-full text-yellow-600 text-base font-semibold py-1 px-3 mt-3 border-2 border-yellow-600 hover:bg-yellow-600 hover:text-white">
+            <button
+              className="w-full text-yellow-600 text-base font-semibold py-1 px-3 mt-3 border-2 border-yellow-600 hover:bg-yellow-600 hover:text-white transition-all duration-300"
+              onClick={handleSubmit}>
               {isNewUser ? "Register" : "Login"}
             </button>
           </div>
