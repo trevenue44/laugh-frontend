@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import Authentication from "./pages/auth";
+import Home from "./pages/home";
 import { User } from "./_types/user";
 
 function App() {
@@ -15,11 +16,7 @@ function App() {
     }
   }, []);
 
-  return (
-    <>
-      {user === null ? <Authentication setUser={setUser} /> : <div>Home</div>}
-    </>
-  );
+  return <>{user !== null ? <Authentication setUser={setUser} /> : <Home />}</>;
 }
 
 export default App;
